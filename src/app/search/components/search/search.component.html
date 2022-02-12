@@ -1,0 +1,45 @@
+<div>
+  <div>{{errorMessage}}</div>
+  <div>
+    <span>
+      <input type="password" placeholder="API Key" [(ngModel)]="apiKey"/>
+    </span>
+    <span>
+      <button (click)="loadGroups()">Load</button>
+    </span>
+  </div>
+
+  <div *ngIf="isLoaded">
+    <br>
+
+    <div>
+      <select [(ngModel)]="selectedGroupId" (ngModelChange)="loadProjects($event)">
+        <option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</option>
+      </select>
+    </div>
+
+    <br>
+
+    <div *ngIf="projectNames">
+      <div>{{projectNames}}</div>
+      <br>
+    </div>
+
+    <div><input [(ngModel)]="searchTerm" placeholder="Search"/><button (click)="searchProjects()">=></button></div>
+  </div>
+
+  <div *ngIf="searchResults">
+    <br>
+    <div *ngFor="let projectName of searchResults | keys">
+      <div *ngIf="searchResults[projectName].length">
+        <div>{{projectName}}</div>
+        <div *ngFor="let result of searchResults[projectName]">
+          {{JSON.stringify(result)}}
+          <hr>
+        </div>
+        <hr>
+      </div>
+    </div>
+  </div>
+
+</div>
