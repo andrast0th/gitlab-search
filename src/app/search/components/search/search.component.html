@@ -30,11 +30,11 @@
 
   <div *ngIf="searchResults">
     <br>
-    <div *ngFor="let projectName of searchResults | keys">
-      <div *ngIf="searchResults[projectName].length">
-        <div>{{projectName}}</div>
-        <div *ngFor="let result of searchResults[projectName]">
-          {{JSON.stringify(result)}}
+    <div *ngFor="let searchResultsPerProject of searchResults">
+      <div *ngIf="searchResultsPerProject.searchResults.length">
+        <div>{{searchResultsPerProject.project.name}}</div>
+        <div *ngFor="let result of searchResultsPerProject.searchResults">
+          <app-search-result [searchResult]="result"></app-search-result>
           <hr>
         </div>
         <hr>

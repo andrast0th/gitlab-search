@@ -4,7 +4,7 @@ import {GitlabService} from '../../../shared/services/gitlab.service';
 import {StorageService} from '../../../shared/services/storage.service';
 import {Group} from '../../../shared/models/group.model';
 import {Project} from '../../../shared/models/project.model';
-import {SearchResult} from '../../../shared/models/search-result.model';
+import {SearchResult, SearchResultPerProject} from '../../../shared/models/search-result.model';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +26,7 @@ export class SearchComponent implements OnInit {
   projectNames: string;
 
   searchTerm: string;
-  searchResults: {[projectName: string]: SearchResult[]};
+  searchResults: SearchResultPerProject[];
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   JSON: JSON;
@@ -102,17 +102,11 @@ export class SearchComponent implements OnInit {
   }
 
   searchProjects() {
-    const queryNum = this.projects.length;
-    this.searchResults = {};
-
-    for (let i = 0; i < queryNum; i++) {
-      const projId = this.projects[i].id;
-      const projName = this.projects[i].name;
-      this.gitlabService.searchProject(projId, this.searchTerm)
-        .subscribe(result => {
-          this.searchResults[projName] = result;
-        });
-    }
+    return this.gitlabService
+      .searchProjects(this.projects, this.searchTerm)
+      .subscribe(result => {
+        this.searchResults = result;
+      });
   }
 
   saveApiKey(apiKey: string) {

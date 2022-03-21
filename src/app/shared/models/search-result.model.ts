@@ -1,3 +1,10 @@
+import {Project} from './project.model';
+
+export class SearchResultPerProject {
+  project: Project;
+  searchResults: [SearchResult];
+}
+
 export class SearchResult {
   basename: string;
   data: string;
@@ -8,4 +15,5 @@ export class SearchResult {
   startline: number;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   project_id: number;
+  project: Project;
 }
