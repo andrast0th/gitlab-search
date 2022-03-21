@@ -91,7 +91,7 @@ export class SearchComponent implements OnInit {
       .subscribe({
           next: (result: Project[]) => {
             this.projects = result;
-            this.projectNames = result.map(proj => proj.name).join();
+            this.projectNames = result.map(proj => proj.name).join(', ');
           },
           error: (error) => {
             console.error(error);
@@ -102,11 +102,13 @@ export class SearchComponent implements OnInit {
   }
 
   searchProjects() {
-    return this.gitlabService
-      .searchProjects(this.projects, this.searchTerm)
-      .subscribe(result => {
-        this.searchResults = result;
-      });
+    if(this.searchTerm && this.searchTerm.length > 3) {
+      return this.gitlabService
+        .searchProjects(this.projects, this.searchTerm)
+        .subscribe(result => {
+          this.searchResults = result;
+        });
+    }
   }
 
   saveApiKey(apiKey: string) {

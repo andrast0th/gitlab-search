@@ -1,43 +1,67 @@
-<div>
-  <div>{{errorMessage}}</div>
-  <div>
-    <span>
-      <input type="password" placeholder="API Key" [(ngModel)]="apiKey"/>
-    </span>
-    <span>
-      <button (click)="loadGroups()">Load</button>
-    </span>
+<div class="container mt-1">
+
+  <div class="input-group">
+    <input [(ngModel)]="searchTerm" (keyup.enter)="searchProjects()"
+           type="text" class="form-control" placeholder="Search Term"
+           aria-label="Search Term" aria-describedby="basic-addon2">
+    <div class="input-group-append">
+      <button type="button" class="btn btn-primary" (click)="searchProjects()">Search</button>
+    </div>
   </div>
 
-  <div *ngIf="isLoaded">
-    <br>
+  <ngb-alert class="pt-3" *ngIf="errorMessage" type="danger" [dismissible]="false">{{errorMessage}}</ngb-alert>
 
-    <div>
-      <select [(ngModel)]="selectedGroupId" (ngModelChange)="loadProjects($event)">
-        <option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</option>
-      </select>
+  <div class="pt-3">
+    <div class="input-group">
+      <input [(ngModel)]="apiKey" (keyup.enter)="loadGroups()"
+             type="password" class="form-control" placeholder="API Key" aria-label="API Key"
+             aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <button type="button" class="btn btn-primary" [disabled]="apiKey?.length === 0" (click)="loadGroups()">Load Groups</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-3" *ngIf="isLoaded">
+    <select class="form-select" aria-label="Select Group" [(ngModel)]="selectedGroupId"
+            (ngModelChange)="loadProjects($event)">
+      <option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</option>
+    </select>
+
+  </div>
+
+  <div class="pt-3" *ngIf="projects.length && isLoaded">
+    <a class="alert-link" placement="bottom" ngbTooltip="{{projectNames}}">
+      Loaded projects: {{projects.length}}
+    </a>
+  </div>
+
+  <div class="pt-3" *ngIf="isLoaded">
+
+    <div class="input-group">
+      <input [(ngModel)]="searchTerm" (keyup.enter)="searchProjects()"
+             type="text" class="form-control" placeholder="Search Term"
+             aria-label="Search Term" aria-describedby="basic-addon2">
+      <div class="input-group-append">
+        <button type="button" class="btn btn-primary" (click)="searchProjects()">Search</button>
+      </div>
     </div>
 
-    <br>
-
-    <div *ngIf="projectNames">
-      <div>{{projectNames}}</div>
-      <br>
-    </div>
-
-    <div><input [(ngModel)]="searchTerm" placeholder="Search"/><button (click)="searchProjects()">=></button></div>
   </div>
 
   <div *ngIf="searchResults">
     <br>
     <div *ngFor="let searchResultsPerProject of searchResults">
       <div *ngIf="searchResultsPerProject.searchResults.length">
-        <div>{{searchResultsPerProject.project.name}}</div>
-        <div *ngFor="let result of searchResultsPerProject.searchResults">
-          <app-search-result [searchResult]="result"></app-search-result>
-          <hr>
-        </div>
-        <hr>
+        <ngb-accordion>
+          <ngb-panel id="{{searchResultsPerProject.project.name}}" title="{{searchResultsPerProject.project.name}}">
+            <ng-template ngbPanelContent>
+              <div *ngFor="let result of searchResultsPerProject.searchResults">
+                <app-search-result [searchResult]="result" [project]="searchResultsPerProject.project"></app-search-result>
+              </div>
+            </ng-template>
+          </ngb-panel>
+        </ngb-accordion>
       </div>
     </div>
   </div>

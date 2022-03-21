@@ -1,7 +1,37 @@
-<div>basename: {{searchResult.basename}}</div>
-<div>data: {{searchResult.data}}</div>
-<div>path: {{searchResult.path}}</div>
-<div>filename: {{searchResult.filename}}</div>
-<div>id: {{searchResult.id}}</div>
-<div>ref: {{searchResult.ref}}</div>
-<div>startline: {{searchResult.startline}}</div>
+<ngb-accordion>
+  <ngb-panel id="static" title="{{searchResult.basename}}">
+    <ng-template ngbPanelContent>
+      <ngb-alert [dismissible]="false" type="dark">
+        <div style="white-space: pre-wrap">{{searchResult.data}}</div>
+      </ngb-alert>
+      <table class="table">
+        <tbody>
+        <tr></tr>
+        <tr *ngIf="searchResult.id">
+          <td>ID</td>
+          <td>{{searchResult.id}}</td>
+        </tr>
+        <tr>
+          <td>Path</td>
+          <td>{{searchResult.path}}</td>
+        </tr>
+        <tr>
+          <td>Ref</td>
+          <td>{{searchResult.ref}}</td>
+        </tr>
+        <tr>
+          <td>Line</td>
+          <td>{{searchResult.startline}}</td>
+        </tr>
+        <tr>
+          <td>Link</td>
+          <td><button class="btn btn-primary" (click)="openLink(project.web_url + '/-/blob/' + searchResult.ref + '/' + searchResult.path)">View in web</button></td>
+        </tr>
+        </tbody>
+      </table>
+
+    </ng-template>
+  </ngb-panel>
+</ngb-accordion>
+
+
