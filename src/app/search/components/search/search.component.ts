@@ -4,7 +4,7 @@ import {GitlabService} from '../../../shared/services/gitlab.service';
 import {StorageService} from '../../../shared/services/storage.service';
 import {Group} from '../../../shared/models/group.model';
 import {Project} from '../../../shared/models/project.model';
-import {SearchResult, SearchResultPerProject} from '../../../shared/models/search-result.model';
+import {SearchResultPerProject} from '../../../shared/models/search-result.model';
 
 @Component({
   selector: 'app-home',
@@ -26,6 +26,7 @@ export class SearchComponent implements OnInit {
   projectNames: string;
 
   searchTerm: string;
+  gitlabBaseUrl: string;
   searchResults: SearchResultPerProject[];
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -41,20 +42,35 @@ export class SearchComponent implements OnInit {
     this.storageService.getStorage().subscribe(storage => {
       this.storage = storage;
       this.apiKey = storage.apiKey;
-      if(this.apiKey) {
+      this.gitlabBaseUrl = storage.gitlabBaseUrl;
+      if(this.apiKey && this.gitlabBaseUrl) {
         this.loadGroups();
       }
     });
   }
 
   loadGroups() {
+    this.isLoaded = false;
     this.projectNames = undefined;
     this.errorMessage = undefined;
 
-    if (this.apiKey !== this.storage?.apiKey) {
-      this.saveApiKey(this.apiKey);
+    let obs;
+    if (this.apiKey !== this.storage?.apiKey || this.gitlabBaseUrl !== this.storage?.gitlabBaseUrl) {
+      obs = this.saveApiKey(this.apiKey, this.gitlabBaseUrl)
+        .then(() => this.gitlabService.loadStorage())
+        .then(() => new Promise(r => setTimeout(r, 100)));
     }
 
+    if(obs) {
+      obs.then(() => {
+        this.loadGroupsUI();
+      });
+    } else {
+      this.loadGroupsUI();
+    }
+  }
+
+  private loadGroupsUI() {
     this.gitlabService
       .loadGroups()
       .subscribe({
@@ -72,8 +88,6 @@ export class SearchComponent implements OnInit {
           }
         }
       );
-
-
 
     this.isLoaded = true;
   }
@@ -111,16 +125,13 @@ export class SearchComponent implements OnInit {
     }
   }
 
-  saveApiKey(apiKey: string) {
+  saveApiKey(apiKey: string, gitlabBaseUrl: string) {
     this.storage = this.storage === null || this.storage === undefined ? new Storage() : this.storage;
     this.storage.apiKey = apiKey;
+    this.storage.gitlabBaseUrl = gitlabBaseUrl;
     this.apiKey = apiKey;
-    this.storageService
-      .saveStorage(this.storage)
-      .then((result) => {
-        // eslint-disable-next-line no-console
-        console.debug(result);
-      });
+    this.gitlabBaseUrl = gitlabBaseUrl;
+    return this.storageService.saveStorage(this.storage);
   }
 
 }

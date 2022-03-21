@@ -11,14 +11,18 @@ import {Group} from '../models/group.model';
 })
 export class GitlabService {
 
-  private readonly gitlabApiUrl = 'https://gitlab.corp.dir/api/v4/';
   private readonly queryParams = '?per_page=100';
-
+  private gitlabApiUrl;
   private apiKey;
 
   constructor(private http: HttpClient, private storageService: StorageService) {
+    this.loadStorage();
+  }
+
+  public loadStorage() {
     this.storageService.getStorage().subscribe(storage => {
       this.apiKey = storage.apiKey;
+      this.gitlabApiUrl = storage.gitlabBaseUrl;
     });
   }
 

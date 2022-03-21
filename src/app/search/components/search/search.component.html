@@ -1,15 +1,12 @@
 <div class="container mt-1">
 
-  <div class="input-group">
-    <input [(ngModel)]="searchTerm" (keyup.enter)="searchProjects()"
-           type="text" class="form-control" placeholder="Search Term"
-           aria-label="Search Term" aria-describedby="basic-addon2">
-    <div class="input-group-append">
-      <button type="button" class="btn btn-primary" (click)="searchProjects()">Search</button>
-    </div>
-  </div>
-
   <ngb-alert class="pt-3" *ngIf="errorMessage" type="danger" [dismissible]="false">{{errorMessage}}</ngb-alert>
+
+  <div class="input-group">
+    <input [(ngModel)]="gitlabBaseUrl"
+           type="text" class="form-control" placeholder="GitLab API base URL (ex: 'https://gitlab.com/api/v4/')"
+           aria-label="Search Term" aria-describedby="basic-addon2">
+  </div>
 
   <div class="pt-3">
     <div class="input-group">
@@ -17,7 +14,7 @@
              type="password" class="form-control" placeholder="API Key" aria-label="API Key"
              aria-describedby="basic-addon2">
       <div class="input-group-append">
-        <button type="button" class="btn btn-primary" [disabled]="apiKey?.length === 0" (click)="loadGroups()">Load Groups</button>
+        <button type="button" class="btn btn-primary" [disabled]="!apiKey || !gitlabBaseUrl" (click)="loadGroups()">Load Groups</button>
       </div>
     </div>
   </div>
