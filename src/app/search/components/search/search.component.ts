@@ -18,6 +18,7 @@ export class SearchComponent implements OnInit {
   errorMessage: string | undefined;
 
   isLoaded = false;
+  isLoading = false;
 
   groups: Group[] = [];
   selectedGroupId: number;
@@ -70,7 +71,7 @@ export class SearchComponent implements OnInit {
     }
   }
 
-  private loadGroupsUI() {
+  public loadGroupsUI() {
     this.gitlabService
       .loadGroups()
       .subscribe({
@@ -116,11 +117,13 @@ export class SearchComponent implements OnInit {
   }
 
   searchProjects() {
-    if(this.searchTerm && this.searchTerm.length > 3) {
+    this.isLoading = true;
+    if(this.searchTerm && this.searchTerm.length >= 3) {
       return this.gitlabService
         .searchProjects(this.projects, this.searchTerm)
-        .subscribe(result => {
-          this.searchResults = result;
+        .subscribe({
+          next: result => this.searchResults = result,
+          complete: () => this.isLoading = false
         });
     }
   }

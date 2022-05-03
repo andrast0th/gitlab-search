@@ -1,3 +1,4 @@
+<div *ngIf="isLoading" id="overlay"></div>
 <div class="container mt-1">
 
   <ngb-alert class="pt-3" *ngIf="errorMessage" type="danger" [dismissible]="false">{{errorMessage}}</ngb-alert>

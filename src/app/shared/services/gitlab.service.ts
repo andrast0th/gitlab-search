@@ -2,9 +2,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {StorageService} from './storage.service';
 import {SearchResult, SearchResultPerProject} from '../models/search-result.model';
-import {combineLatest, map, Observable} from 'rxjs';
 import {Project} from '../models/project.model';
 import {Group} from '../models/group.model';
+
+import {from, map, Observable} from 'rxjs';
+import {concatMap, toArray} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +54,13 @@ export class GitlabService {
   }
 
   public searchProjects(projects: Project[], searchTerm: string) {
-    return combineLatest(projects.map(project => this.searchProject(project, searchTerm)));
+    return from(projects)
+      .pipe(
+        concatMap(prj =>
+          this.searchProject(prj, searchTerm)
+        ),
+        toArray(),
+      );
   }
 
   private httpGet<T>(apiUrl: string, appendQueryParams = true): Observable<T> {
